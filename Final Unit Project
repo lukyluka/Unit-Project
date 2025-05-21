@@ -1,0 +1,108 @@
+Project Idea
+This project simulates a three-part pendulum using simple trigonometry and motion physics. The pendulum demonstrates chaotic motion and oscillation based on initial conditions.
+
+Modeling
+A chained pendulum system with three pendulum arms connected in series. Each arm is defined by its angle, angular velocity, and angular acceleration.
+
+Key Variables and Structures
+- a1, a2, a3: Angles of each pendulum arm
+- a1_v, a2_v, a3_v: Angular velocities
+- a1_a, a2_a, a3_a: Angular accelerations
+- l1, l2, l3: Lengths of the arms
+- m1, m2, m3: Masses at each joint
+- g: Gravity constant
+- (x1, y1), (x2, y2), (x3, y3): Positions based on angles
+
+Setup
+Create the canvas and set initial values for angles, lengths, masses, and gravity. Pendulums begin in a downward position.
+
+Draw Flow
+1. Calculate angular accelerations.
+2. Update angular velocities with damping.
+3. Update angles.
+4. Compute positions.
+5. Draw arms and masses.
+Potential Class Structure
+
+Pendulum Segment:
+- Properties: angle, angularVelocity, angularAcceleration, length, mass
+- Actions: update(), calculatePosition(), display()
+
+
+
+
+
+let a1 = Math.PI / 2;
+let a2 = Math.PI / 2;
+let a3 = Math.PI / 2;
+
+let a1_v = 0;
+let a2_v = 0;
+let a3_v = 0;
+
+let a1_a = 0;
+let a2_a = 0;
+let a3_a = 0;
+
+let l1 = 100;
+let l2 = 100;
+let l3 = 100;
+
+let m1 = 10;
+let m2 = 10;
+let m3 = 10;
+
+let g = 1;
+
+function setup() {
+  createCanvas(600, 600);
+}
+
+function draw() {
+  background(240);
+  translate(width / 2, 200);
+
+  let num1 = -g * (2 * m1 + m2 + m3) * sin(a1);
+  let num2 = -m2 * g * sin(a1 - 2 * a2);
+  let num3 = -2 * sin(a1 - a2) * m2;
+  let num4 = a2_v * a2_v * l2 + a1_v * a1_v * l1 * cos(a1 - a2);
+  a1_a = (num1 + num2 + num3 * num4) / (l1 * (2 * m1 + m2 + m3 - m2 * cos(2 * a1 - 2 * a2)));
+
+  num1 = 2 * sin(a1 - a2);
+  num2 = a1_v * a1_v * l1 * (m1 + m2 + m3);
+  num3 = g * (m1 + m2 + m3) * cos(a1);
+  num4 = a2_v * a2_v * l2 * m2 * cos(a1 - a2);
+  a2_a = (num1 * (num2 + num3 + num4)) / (l2 * (2 * m1 + m2 + m3 - m2 * cos(2 * a1 - 2 * a2)));
+
+  a1_v += a1_a;
+  a2_v += a2_a;
+  a3_v += a3_a;
+
+  a1 += a1_v;
+  a2 += a2_v;
+  a3 += a3_v;
+
+  a1_v *= 0.99;
+  a2_v *= 0.99;
+  a3_v *= 0.99;
+
+  let x1 = l1 * sin(a1);
+  let y1 = l1 * cos(a1);
+
+  let x2 = x1 + l2 * sin(a2);
+  let y2 = y1 + l2 * cos(a2);
+
+  let x3 = x2 + l3 * sin(a3);
+  let y3 = y2 + l3 * cos(a3);
+
+  stroke(0);
+  line(0, 0, x1, y1);
+  fill(127);
+  ellipse(x1, y1, 20, 20);
+
+  line(x1, y1, x2, y2);
+  ellipse(x2, y2, 20, 20);
+
+  line(x2, y2, x3, y3);
+  ellipse(x3, y3, 20, 20);
+}
